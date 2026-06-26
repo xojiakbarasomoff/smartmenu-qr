@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: smartmenu
+    runtime: python
+    plan: free
+    region: frankfurt          # closest free region to Tashkent + EU
+    pythonVersion: "3.11.0"
+
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: python run.py
+
+    # Render health-check — marks deploy healthy once this returns 200
+    healthCheckPath: /api/menu
+
+    envVars:
+      # ── Secrets (enter values in Render Dashboard, never hardcode here) ──
+      - key: BOT_TOKEN
+        sync: false            # Render will prompt you to enter this value
+
+      - key: NOTIFY_CHAT_ID
+        sync: false            # Render will prompt you to enter this value
+
+      # ── Non-secret config ──
+      - key: BOT_USERNAME
+        value: "@my_smart_menu_bot"
+
+      # Render injects $PORT automatically; run.py already reads os.environ["PORT"]
+      # so APP_PORT below is just a fallback for local parity — you can omit it.
+      - key: APP_HOST
+        value: "0.0.0.0"

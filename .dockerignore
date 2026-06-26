@@ -1,0 +1,30 @@
+# ── Python artefacts ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ── Environment / secrets (pass via --env-file at runtime) ────────
+.env
+.env.*
+*.env
+
+# ── Dev / utility files (not needed in container) ─────────────────
+generate_qr.py
+output_qrcodes/
+
+# ── VCS & editor ──────────────────────────────────────────────────
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# ── Docs & tooling ────────────────────────────────────────────────
+*.md
+Makefile
+docker-compose*.yml
