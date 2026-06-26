@@ -4,10 +4,6 @@
     {
       "source": "/api/:path*",
       "destination": "https://smartmenu-qr.onrender.com/api/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/app/templates/index.html"
     }
   ]
 }

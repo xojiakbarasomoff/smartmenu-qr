@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="uz" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SmartMenu — Ultra Premium QR Dining</title>
+  <meta name="theme-color" content="#02040A">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode:'class',
+      theme:{
+        extend:{
+          fontFamily:{
+            sans:['Plus Jakarta Sans','system-ui','sans-serif'],
+            serif:['Playfair Display','Georgia','serif'],
+          },
+          colors:{
+            onyx:'#02040A',
+            gold:{300:'#f5e070',400:'#d4af37',500:'#b8960c',600:'#9a7a08'},
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* ─── Reset & Base ────────────────────────────────────── */
+    *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;}
+    html{scroll-behavior:smooth;font-size:16px;}
+    body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#02040A;color:#f0f0f0;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden;}
+    ::selection{background:rgba(212,175,55,.3);color:#fff;}
+    ::-webkit-scrollbar{width:3px;height:3px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:rgba(212,175,55,.25);border-radius:3px;}
+
+    /* ─── Keyframes ───────────────────────────────────────── */
+    @keyframes aurora{
+      0%  {transform:translate(0,0)scale(1);}
+      20% {transform:translate(80px,-55px)scale(1.12);}
+      40% {transform:translate(-55px,80px)scale(.88);}
+      60% {transform:translate(65px,55px)scale(1.07);}
+      80% {transform:translate(-75px,-30px)scale(.93);}
+      100%{transform:translate(0,0)scale(1);}
+    }
+    @keyframes revealUp{
+      from{opacity:0;transform:translateY(40px)scale(.95);}
+      to  {opacity:1;transform:translateY(0)scale(1);}
+    }
+    @keyframes scaleIn{
+      from{opacity:0;transform:scale(.86);}
+      to  {opacity:1;transform:scale(1);}
+    }
+    @keyframes shimmer{
+      0%  {background-position:-400% 0;}
+      100%{background-position:400% 0;}
+    }
+    @keyframes breathe{
+      0%,100%{opacity:.5;transform:scale(1);}
+      50%    {opacity:.15;transform:scale(1.65);}
+    }
+    @keyframes slowPing{
+      0%      {transform:scale(1);opacity:.7;}
+      75%,100%{transform:scale(2.2);opacity:0;}
+    }
+    @keyframes cartBounce{
+      0%  {transform:scale(1);}
+      28% {transform:scale(.72);}
+      58% {transform:scale(1.18);}
+      80% {transform:scale(.93);}
+      100%{transform:scale(1);}
+    }
+    @keyframes flyPtcl{
+      to{transform:translate(var(--tx),var(--ty))scale(.08);opacity:0;}
+    }
+    @keyframes scrollDown{
+      0%,100%{transform:translateY(0);opacity:.4;}
+      50%    {transform:translateY(6px);opacity:.9;}
+    }
+
+    /* ─── Glass surfaces ──────────────────────────────────── */
+    .glass-nav{
+      background:rgba(2,4,10,.85);
+      backdrop-filter:blur(32px)saturate(200%);
+      -webkit-backdrop-filter:blur(32px)saturate(200%);
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .glass-card{
+      background:rgba(255,255,255,.028);
+      backdrop-filter:blur(24px)saturate(140%);
+      -webkit-backdrop-filter:blur(24px)saturate(140%);
+      border:1px solid rgba(255,255,255,.07);
+    }
+    .glass-surface{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+    }
+    .glass-cart{
+      background:rgba(3,5,14,.97);
+      backdrop-filter:blur(48px);
+      -webkit-backdrop-filter:blur(48px);
+    }
+    .glass-dark-sm{
+      background:rgba(2,4,10,.7);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+
+    /* ─── Skeleton ────────────────────────────────────────── */
+    .skeleton{
+      background:linear-gradient(90deg,rgba(255,255,255,.025)0%,rgba(255,255,255,.07)50%,rgba(255,255,255,.025)100%);
+      background-size:400% 100%;
+      animation:shimmer 2s infinite linear;
+      border-radius:24px;
+    }
+
+    /* ─── Gold gradient text ──────────────────────────────── */
+    .gold-text{
+      background:linear-gradient(135deg,#f7e96a 0%,#d4af37 45%,#b8960c 100%);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .gold-btn{
+      background:linear-gradient(135deg,#d4af37 0%,#f5e070 55%,#d4af37 100%);
+      color:#02040A;
+      box-shadow:0 6px 28px rgba(212,175,55,.38);
+    }
+    .gold-btn:hover{box-shadow:0 10px 40px rgba(212,175,55,.55);}
+    .gold-btn:active{transform:scale(.97);}
+
+    /* ─── Reveal cascade ──────────────────────────────────── */
+    .reveal{
+      opacity:0;
+      animation:revealUp 1.2s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    /* ─── Menu card ───────────────────────────────────────── */
+    .menu-card{
+      position:relative;
+      border-radius:24px;
+      overflow:hidden;
+      transition:
+        transform .5s cubic-bezier(.34,1.56,.64,1),
+        border-color .35s ease,
+        box-shadow .35s ease;
+      will-change:transform;
+    }
+    .menu-card:hover{
+      transform:translateY(-12px);
+      border-color:rgba(139,92,246,.32)!important;
+      box-shadow:
+        0 0 0 1px rgba(139,92,246,.18),
+        0 28px 70px rgba(139,92,246,.12),
+        0 60px 120px rgba(0,0,0,.55),
+        inset 0 1px 0 rgba(255,255,255,.07);
+    }
+    .card-glow{
+      position:absolute;inset:0;border-radius:inherit;
+      background:radial-gradient(450px circle at var(--mx,50%) var(--my,50%),rgba(139,92,246,.11)0%,rgba(59,130,246,.06)40%,transparent 70%);
+      opacity:0;transition:opacity .4s ease;pointer-events:none;z-index:1;
+    }
+    .menu-card:hover .card-glow{opacity:1;}
+    .card-img{transition:transform 1100ms cubic-bezier(.25,1,.5,1);width:100%;height:100%;object-fit:cover;}
+    .menu-card:hover .card-img{transform:scale(1.08);}
+
+    /* ─── Category pills ──────────────────────────────────── */
+    .pill-track{
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+      gap:3px;
+      padding:4px;
+      border-radius:16px;
+      background:rgba(255,255,255,.035);
+      border:1px solid rgba(255,255,255,.06);
+      white-space:nowrap;
+    }
+    #pill-indicator{
+      position:absolute;
+      top:4px;
+      height:calc(100% - 8px);
+      border-radius:12px;
+      background:linear-gradient(135deg,#d4af37,#f5e070);
+      box-shadow:0 4px 22px rgba(212,175,55,.42);
+      transition:left .38s cubic-bezier(.16,1,.3,1), width .38s cubic-bezier(.16,1,.3,1);
+      pointer-events:none;
+      z-index:0;
+    }
+    .pill-btn{
+      position:relative;z-index:1;
+      padding:7px 17px;border-radius:12px;
+      font-size:12.5px;font-weight:600;cursor:pointer;
+      border:none;background:transparent;
+      transition:color .22s ease;white-space:nowrap;
+      letter-spacing:.01em;
+    }
+    .pill-btn.active{color:#02040A;}
+    .pill-btn.idle{color:rgba(255,255,255,.38);}
+    .pill-btn.idle:hover{color:rgba(255,255,255,.75);}
+
+    /* ─── Table slider ────────────────────────────────────── */
+    .table-num{
+      width:54px;height:54px;border-radius:14px;
+      font-size:15px;font-weight:700;
+      cursor:pointer;flex-shrink:0;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.025);
+      color:rgba(255,255,255,.38);
+      display:flex;align-items:center;justify-content:center;
+      transition:all .28s cubic-bezier(.16,1,.3,1);
+    }
+    .table-num:hover{
+      border-color:rgba(212,175,55,.35);
+      color:rgba(255,255,255,.7);
+      background:rgba(212,175,55,.06);
+    }
+    .table-num.sel{
+      background:linear-gradient(135deg,#d4af37,#f5e070);
+      color:#02040A;border-color:transparent;
+      box-shadow:0 0 0 3px rgba(212,175,55,.22),0 8px 24px rgba(212,175,55,.35);
+    }
+    .no-scrollbar{scrollbar-width:none;}
+    .no-scrollbar::-webkit-scrollbar{display:none;}
+
+    /* ─── Page wrapper (scales on cart open) ─────────────── */
+    #page-wrap{
+      transform-origin:center center;
+      transition:
+        transform .52s cubic-bezier(.16,1,.3,1),
+        filter .52s cubic-bezier(.16,1,.3,1),
+        border-radius .52s cubic-bezier(.16,1,.3,1),
+        opacity .52s ease;
+    }
+    #page-wrap.cart-open{
+      transform:scale(.96);
+      filter:blur(2px)brightness(.6);
+      border-radius:28px;
+      overflow:hidden;
+      pointer-events:none;
+    }
+
+    /* ─── Cart drawer ─────────────────────────────────────── */
+    .cart-drawer{
+      position:fixed;z-index:120;
+      display:flex;flex-direction:column;
+    }
+    @media(min-width:640px){
+      .cart-drawer{
+        top:0;right:0;bottom:0;
+        width:min(460px,90vw);
+        transform:translateX(101%);
+        transition:transform .52s cubic-bezier(.16,1,.3,1);
+        border-left:1px solid rgba(255,255,255,.06);
+      }
+      .cart-drawer.open{transform:translateX(0);}
+    }
+    @media(max-width:639px){
+      .cart-drawer{
+        bottom:0;left:0;right:0;
+        max-height:92svh;
+        border-radius:24px 24px 0 0;
+        transform:translateY(101%);
+        transition:transform .48s cubic-bezier(.16,1,.3,1);
+        border-top:1px solid rgba(255,255,255,.07);
+      }
+      .cart-drawer.open{transform:translateY(0);}
+    }
+
+    /* ─── FAB ─────────────────────────────────────────────── */
+    .fab-core{
+      position:relative;
+      width:62px;height:62px;
+      border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;
+      background:linear-gradient(135deg,#d4af37,#f5e070);
+      border:1px solid rgba(255,255,255,.22);
+      box-shadow:0 8px 32px rgba(212,175,55,.42),inset 0 1px 0 rgba(255,255,255,.3);
+      transition:transform .2s ease,box-shadow .2s ease;
+    }
+    .fab-core:hover{transform:scale(1.07);box-shadow:0 14px 44px rgba(212,175,55,.6),inset 0 1px 0 rgba(255,255,255,.3);}
+    .fab-core:active{transform:scale(.9);}
+    .fab-ring{
+      position:absolute;inset:-2px;border-radius:50%;
+      animation:slowPing 2.2s cubic-bezier(0,0,.2,1)infinite;
+    }
+    .fab-ring-2{animation-delay:.88s;}
+
+    /* ─── Qty btn ─────────────────────────────────────────── */
+    .qty-btn{transition:transform .15s ease;}
+    .qty-btn:active{transform:scale(.8);}
+
+    /* ─── Overlay ─────────────────────────────────────────── */
+    #cart-overlay{transition:opacity .4s ease;}
+
+    /* ─── Badge chips ─────────────────────────────────────── */
+    .badge{padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;}
+    .badge-chef       {background:linear-gradient(135deg,#6d28d9,#a78bfa);}
+    .badge-popular    {background:linear-gradient(135deg,#c2410c,#fb923c);}
+    .badge-organic    {background:linear-gradient(135deg,#065f46,#34d399);}
+    .badge-traditional{background:linear-gradient(135deg,#92400e,#d4af37);}
+
+    /* ─── Cart bounce ─────────────────────────────────────── */
+    .do-bounce{animation:cartBounce .52s cubic-bezier(.36,.07,.19,.97);}
+
+    /* ─── Particle ────────────────────────────────────────── */
+    .ptcl{
+      position:fixed;border-radius:50%;pointer-events:none;z-index:9999;
+      animation:flyPtcl var(--dur,.6s) cubic-bezier(.2,.8,.8,1) var(--del,0s) forwards;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
+    <div style="position:absolute;width:900px;height:900px;top:-280px;left:-180px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.18)0%,transparent 65%);filter:blur(80px);animation:aurora 14s ease-in-out infinite;will-change:transform;"></div>
+    <div style="position:absolute;width:700px;height:700px;top:30%;right:-200px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.14)0%,transparent 65%);filter:blur(90px);animation:aurora 20s ease-in-out infinite reverse;animation-delay:-6s;will-change:transform;"></div>
+    <div style="position:absolute;width:600px;height:600px;bottom:-120px;left:12%;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.09)0%,transparent 65%);filter:blur(100px);animation:aurora 26s ease-in-out infinite;animation-delay:-12s;will-change:transform;"></div>
+    <div style="position:absolute;width:500px;height:500px;top:52%;right:18%;border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,.07)0%,transparent 65%);filter:blur(120px);animation:aurora 18s ease-in-out infinite reverse;animation-delay:-3s;will-change:transform;"></div>
+  </div>
+
+  <header class="glass-nav fixed top-0 left-0 right-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-[62px] flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg gold-btn flex-shrink-0 select-none">🍽</div>
+        <div class="hidden sm:block leading-none">
+          <p class="text-[13px] font-extrabold tracking-[-0.02em] text-white">SmartMenu</p>
+          <p class="text-[9px] gold-text font-bold tracking-[.22em] uppercase mt-[1px]">Ultra Premium</p>
+        </div>
+      </div>
+      <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full glass-surface">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" style="animation:breathe 2.5s ease-in-out infinite;box-shadow:0 0 8px rgba(52,211,153,.9);"></span>
+        <span class="text-[10px] font-bold tracking-[.2em] uppercase text-white/35">Ochiq · Toshkent Fine Dining</span>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <div class="flex p-[3px] rounded-full gap-[2px] border border-white/[.07] bg-white/[.03]">
+          <button id="btn-uzs" onclick="setCurrency('UZS')"
+            class="px-3 py-1 rounded-full text-[11px] font-bold transition-all duration-200 gold-btn">UZS</button>
+          <button id="btn-eur" onclick="setCurrency('EUR')"
+            class="px-3 py-1 rounded-full text-[11px] font-bold transition-all duration-200 text-white/35 hover:text-white/65">EUR</button>
+        </div>
+        <button onclick="toggleTheme()" aria-label="Toggle theme"
+          class="w-9 h-9 rounded-xl glass-surface flex items-center justify-center text-white/35 hover:text-white/70 transition-colors">
+          <i data-lucide="moon" class="w-4 h-4" id="ico-moon"></i>
+          <i data-lucide="sun"  class="w-4 h-4 hidden" id="ico-sun"></i>
+        </button>
+        <button onclick="openCart()" id="hdr-cart" aria-label="Cart"
+          class="relative w-9 h-9 rounded-xl gold-btn flex items-center justify-center transition-all duration-200 hover:scale-105">
+          <i data-lucide="shopping-cart" class="w-[17px] h-[17px]" style="color:#02040A;"></i>
+          <span id="hdr-badge" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold items-center justify-center hidden leading-none" style="padding-top:1px;">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div id="page-wrap">
+    <section class="relative overflow-hidden" style="min-height:100svh;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(2,4,10,0)0%,#02040A 100%);">
+      <div class="absolute inset-0 pointer-events-none select-none" style="background-image:radial-gradient(rgba(255,255,255,.045) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 25%,transparent 100%);-webkit-mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 25%,transparent 100%);"></div>
+      <div class="relative text-center px-4 sm:px-6 max-w-5xl mx-auto pt-24 pb-16">
+        <div class="inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-8 reveal" style="animation-delay:0s;background:rgba(212,175,55,.07);border:1px solid rgba(212,175,55,.16);">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-[10px] font-bold tracking-[.24em] uppercase gold-text">Ochiq · Toshkent · Fine Dining · Est. 2024</span>
+        </div>
+        <h1 class="font-extrabold tracking-[-0.035em] leading-[1.05] mb-6 reveal" style="animation-delay:.07s;font-size:clamp(2.8rem,8vw,5.5rem);">
+          <span class="text-white">Haqiqiy</span>
+          <br>
+          <em class="font-serif italic gold-text not-italic" style="font-style:italic;font-size:1.08em;">Lazzat</em>
+          <span class="text-white"> — Sizning</span>
+          <br>
+          <span class="text-white/20">Stolizingizda</span>
+        </h1>
+        <p class="text-white/38 text-base sm:text-lg max-w-xl mx-auto leading-relaxed mb-12 reveal" style="animation-delay:.14s;">
+          Eng sara ingredientlar, ustoz oshpazlar mahorati va Yevropa restoran madaniyati —
+          <span class="text-white/60 font-medium">Toshkentda, hozir, siz uchun.</span>
+        </p>
+        <div class="flex items-stretch justify-center flex-wrap gap-0 reveal" style="animation-delay:.20s;">
+          <div class="px-8 py-3 text-center border-r border-white/[.06]">
+            <p class="text-3xl font-black text-white">4.9<span class="gold-text">★</span></p>
+            <p class="text-[10px] text-white/25 font-semibold tracking-[.18em] uppercase mt-1">Reyting</p>
+          </div>
+          <div class="px-8 py-3 text-center border-r border-white/[.06]">
+            <p class="text-3xl font-black text-white">25–35</p>
+            <p class="text-[10px] text-white/25 font-semibold tracking-[.18em] uppercase mt-1">Daqiqa</p>
+          </div>
+          <div class="px-8 py-3 text-center border-r border-white/[.06]">
+            <p class="text-3xl font-black text-white">12+</p>
+            <p class="text-[10px] text-white/25 font-semibold tracking-[.18em] uppercase mt-1">Taomlar</p>
+          </div>
+          <div class="px-8 py-3 text-center">
+            <p class="text-3xl font-black text-white">5<span class="gold-text">★</span></p>
+            <p class="text-[10px] text-white/25 font-semibold tracking-[.18em] uppercase mt-1">Xizmat</p>
+          </div>
+        </div>
+        <div class="mt-16 flex flex-col items-center gap-2.5 reveal" style="animation-delay:.28s;">
+          <div class="w-6 h-10 rounded-full border border-white/10 flex items-start justify-center pt-2">
+            <div class="w-[3px] h-3 rounded-full bg-white/30" style="animation:scrollDown 1.8s ease-in-out infinite;"></div>
+          </div>
+          <span class="text-[10px] text-white/18 font-semibold tracking-[.24em] uppercase">Pastga aylanting</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="relative z-10 px-4 sm:px-6 py-8">
+      <div class="max-w-7xl mx-auto">
+        <div class="glass-card rounded-3xl p-6 sm:p-8">
+          <div class="flex items-start justify-between mb-6">
+            <div class="flex items-center gap-4">
+              <div class="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:rgba(212,175,55,.09);border:1px solid rgba(212,175,55,.18);">
+                <i data-lucide="armchair" class="w-5 h-5 text-gold-400"></i>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold tracking-[.2em] uppercase text-white/22 mb-0.5">Stol raqami</p>
+                <p id="table-lbl" class="text-sm font-bold text-white/45">Stolni tanlang</p>
+              </div>
+            </div>
+            <div class="text-right hidden sm:block">
+              <p class="text-[10px] text-white/18 font-medium">Jami 20 stol mavjud</p>
+              <p class="text-[10px] text-white/12 mt-0.5">Bitta stol tanlang</p>
+            </div>
+          </div>
+          <div class="overflow-x-auto no-scrollbar -mx-2 px-2">
+            <div id="table-row" class="flex gap-2.5 py-1" style="min-width:max-content;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="relative z-10 px-4 sm:px-6 pb-52">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex items-end justify-between mb-8">
+          <div>
+            <p class="text-[10px] font-bold tracking-[.24em] uppercase text-white/22 mb-2">Bizning Menyumiz</p>
+            <h2 class="font-extrabold text-white tracking-[-0.03em] leading-tight" style="font-size:clamp(1.8rem,4vw,2.8rem);">
+              Premium <em class="font-serif italic gold-text not-italic" style="font-style:italic;">taomlar</em> kataloqi
+            </h2>
+          </div>
+          <p class="text-sm text-white/22 font-medium hidden sm:block mb-1">12 ta taom · 4 kategoriya</p>
+        </div>
+        <div class="overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 mb-8">
+          <div class="pill-track" id="pill-track">
+            <div id="pill-indicator"></div>
+          </div>
+        </div>
+        <div id="skel-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div class="skeleton h-[380px]"></div>
+          <div class="skeleton h-[380px]" style="animation-delay:.12s;"></div>
+          <div class="skeleton h-[380px]" style="animation-delay:.24s;"></div>
+          <div class="skeleton h-[380px]" style="animation-delay:.36s;"></div>
+          <div class="skeleton h-[380px]" style="animation-delay:.48s;"></div>
+          <div class="skeleton h-[380px]" style="animation-delay:.60s;"></div>
+        </div>
+        <div id="menu-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      </div>
+    </section>
+  </div>
+
+  <div id="cart-overlay" onclick="closeCart()"
+    class="fixed inset-0 z-[100] hidden opacity-0"
+    style="background:rgba(0,0,0,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);"></div>
+
+  <div id="cart-drawer" class="cart-drawer glass-cart">
+    <div class="sm:hidden flex justify-center pt-3 pb-1 flex-shrink-0">
+      <div class="w-11 h-1 rounded-full bg-white/10"></div>
+    </div>
+    <div class="flex items-center justify-between px-6 py-5 border-b flex-shrink-0" style="border-color:rgba(255,255,255,.055);">
+      <div>
+        <h2 class="text-lg font-extrabold text-white tracking-[-0.02em]">Savat</h2>
+        <p id="cart-lbl" class="text-xs text-white/28 font-medium mt-0.5">0 ta mahsulot</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="clearCart()" id="clear-btn"
+          class="hidden items-center gap-1.5 text-[11px] font-semibold text-red-400/70 hover:text-red-400 transition-colors px-3 py-2 rounded-xl hover:bg-red-400/8">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>Tozalash
+        </button>
+        <button onclick="closeCart()"
+          class="w-9 h-9 rounded-xl glass-surface flex items-center justify-center text-white/35 hover:text-white/75 transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+    <div id="cart-list" class="flex-1 overflow-y-auto px-5 py-4 space-y-3"></div>
+    <div id="cart-empty" class="hidden flex-1 flex-col items-center justify-center pb-12 text-center px-6">
+      <div class="w-20 h-20 rounded-2xl glass-surface flex items-center justify-center text-4xl mb-5 select-none">🛒</div>
+      <p class="text-base font-bold text-white/50 mb-1.5">Savat hali bo'sh</p>
+      <p class="text-sm text-white/22">Menyudan taom tanlang</p>
+    </div>
+    <div id="cart-footer" class="hidden px-5 py-5 border-t flex-shrink-0" style="border-color:rgba(255,255,255,.055);">
+      <div class="flex items-center justify-between mb-5">
+        <span class="text-sm text-white/35 font-medium">Jami summa</span>
+        <span id="cart-total" class="text-2xl font-extrabold text-white tracking-[-0.025em]"></span>
+      </div>
+      <button onclick="checkout()" id="checkout-btn"
+        class="w-full py-4 rounded-2xl font-extrabold text-[#02040A] text-sm sm:text-base flex items-center justify-center gap-2 transition-all duration-200 active:scale-[.97] gold-btn"
+        style="letter-spacing:.01em;">
+        <i data-lucide="send" class="w-4 h-4"></i>
+        <span id="checkout-txt">Buyurtma berish</span>
+      </button>
+      <p class="text-center text-[11px] text-white/18 mt-3 font-medium">Buyurtma bevosita oshxonaga boradi 🍳</p>
+    </div>
+  </div>
+
+  <div id="fab" class="fixed bottom-7 right-5 z-[110] hidden">
+    <div class="relative">
+      <span id="fab-r1" class="hidden fab-ring" style="background:rgba(212,175,55,.22);"></span>
+      <span id="fab-r2" class="hidden fab-ring fab-ring-2" style="background:rgba(212,175,55,.12);"></span>
+      <button onclick="openCart()" id="fab-btn" class="fab-core" aria-label="Open cart">
+        <i data-lucide="shopping-cart" class="w-5 h-5" style="color:#02040A;"></i>
+        <span id="fab-badge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[9.5px] font-bold flex items-center justify-center leading-none" style="padding-top:1px;">0</span>
+      </button>
+    </div>
+    <p id="fab-total" class="text-center text-[11px] font-bold text-white/45 mt-2"></p>
+  </div>
+
+  <div id="success-modal" class="fixed inset-0 z-[140] hidden items-center justify-center p-5">
+    <div class="absolute inset-0 bg-black/82" style="backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);" onclick="closeSuccess()"></div>
+    <div class="relative rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl"
+         style="animation:scaleIn .4s cubic-bezier(.16,1,.3,1);background:rgba(6,9,20,.98);border:1px solid rgba(255,255,255,.08);">
+      <div class="absolute -inset-px rounded-3xl pointer-events-none opacity-40" style="background:conic-gradient(from 90deg,transparent 0deg,rgba(212,175,55,.35)90deg,transparent 180deg);"></div>
+      <div class="relative w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center text-4xl select-none" style="background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.18);">
+        ✅
+        <span class="absolute inset-0 rounded-2xl animate-ping" style="background:rgba(52,211,153,.07);animation-duration:1.5s;"></span>
+      </div>
+      <h3 class="text-xl font-extrabold text-white mb-2 tracking-[-0.02em]">Buyurtma qabul qilindi!</h3>
+      <p id="success-oid" class="text-xs text-white/22 font-mono mb-4"></p>
+      <p class="text-sm text-white/40 leading-relaxed mb-7">Oshpazlarimiz allaqachon tayyorlay boshlashdi.<br>Bir ozgina sabr qiling! 🔥</p>
+      <button onclick="closeSuccess()"
+        class="w-full py-3.5 rounded-xl font-extrabold text-[#02040A] text-sm gold-btn transition-all">
+        Yaxshi, rahmat! 👌
+      </button>
+    </div>
+  </div>
+
+  <div id="ptcl-layer" class="fixed inset-0 pointer-events-none z-[9999]" aria-hidden="true"></div>
+
+  <script>
+  'use strict';
+
+  const PHOTOS = {
+    1 :'1565299715199-866c917206bb',
+    2 :'1574071318508-1cdbab80d002',
+    3 :'1568901346375-23c9450c58cd',
+    4 :'1529008402939-3b45f1c0e8a5',
+    5 :'1563379091339-03b21ab4a4f8',
+    6 :'1554866585-cd94860890b7',
+    7 :'1513558161293-cdaf765ed2fd',
+    8 :'1544787219-7f47ccb76574',
+    9 :'1540189549336-e6e99eb4b1e3',
+    10:'1512621776951-a57141f2eefd',
+    11:'1571877227200-a0d98ea607e9',
+    12:'1592417817098-8fd3d9eb14a5',
+  };
+
+  const BADGES = {
+    1 :{l:'Popular',       c:'badge-popular'},
+    2 :{l:"Chef's Special",c:'badge-chef'},
+    3 :{l:'Popular',       c:'badge-popular'},
+    4 :{l:"Chef's Special",c:'badge-chef'},
+    5 :{l:'Traditional',   c:'badge-traditional'},
+    8 :{l:'Organic',       c:'badge-organic'},
+    9 :{l:'Vegan',         c:'badge-organic'},
+    10:{l:'Traditional',   c:'badge-traditional'},
+    11:{l:"Chef's Special",c:'badge-chef'},
+    12:{l:'Organic',       c:'badge-organic'},
+  };
+
+  const ST = { cart:{}, currency:'UZS', cat:'all', table:0, menu:[] };
+
+  const prc  = i => ST.currency === 'EUR' ? i.price_eur : i.price_uzs;
+  const fmt  = i => ST.currency === 'EUR' ? `€${i.price_eur.toFixed(2)}` : `${i.price_uzs.toLocaleString('uz-UZ')} so'm`;
+  const fmtN = n => ST.currency === 'EUR' ? `€${Number(n).toFixed(2)}` : `${Math.round(n).toLocaleString('uz-UZ')} so'm`;
+  const cartN = () => Object.values(ST.cart).reduce((s,i) => s + i.quantity, 0);
+  const cartT = () => Object.values(ST.cart).reduce((s,i) => s + prc(i) * i.quantity, 0);
+  const imgUrl = (id,w=640,h=480) => `https://images.unsplash.com/photo-${PHOTOS[id]||PHOTOS[1]}?w=${w}&h=${h}&fit=crop&q=82&auto=format`;
+
+  function syncTheme() {
+    const dark = document.documentElement.classList.contains('dark');
+    document.getElementById('ico-moon').classList.toggle('hidden', dark);
+    document.getElementById('ico-sun').classList.toggle('hidden', !dark);
+  }
+  function toggleTheme() {
+    document.documentElement.classList.toggle('dark');
+    syncTheme();
+    localStorage.setItem('sm-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+  }
+
+  function setCurrency(c) {
+    ST.currency = c;
+    const A = 'px-3 py-1 rounded-full text-[11px] font-bold transition-all duration-200 gold-btn';
+    const I = 'px-3 py-1 rounded-full text-[11px] font-bold transition-all duration-200 text-white/35 hover:text-white/65';
+    document.getElementById('btn-uzs').className = c === 'UZS' ? A : I;
+    document.getElementById('btn-eur').className = c === 'EUR' ? A : I;
+    renderMenu();
+    renderCartItems();
+  }
+
+  function buildTable() {
+    const row = document.getElementById('table-row');
+    row.innerHTML = '';
+    for (let i = 1; i <= 20; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'table-num';
+      btn.textContent = i;
+      btn.dataset.n = i;
+      btn.onclick = () => selectTable(i);
+      row.appendChild(btn);
+    }
+  }
+
+  function selectTable(n) {
+    ST.table = n;
+    document.querySelectorAll('.table-num').forEach((b, i) => {
+      b.classList.toggle('sel', i + 1 === n);
+    });
+    const lbl = document.getElementById('table-lbl');
+    lbl.textContent = `Stol ${n} tanlandi ✓`;
+    lbl.style.color = '#d4af37';
+  }
+
+  function buildPills(cats) {
+    const track = document.getElementById('pill-track');
+    Array.from(track.children).forEach(c => { if (c.id !== 'pill-indicator') c.remove(); });
+    const list = [['all','Barchasi'], ...cats.map(c => [c, c])];
+    list.forEach(([val, lbl], i) => {
+      const btn = document.createElement('button');
+      btn.className = 'pill-btn ' + (i === 0 ? 'active' : 'idle');
+      btn.dataset.cat = val;
+      btn.textContent = lbl;
+      btn.onclick = () => { moveLiquid(btn); filterCat(val); };
+      track.appendChild(btn);
+    });
+    requestAnimationFrame(() => {
+      const first = track.querySelector('.pill-btn');
+      if (first) moveLiquid(first, true);
+    });
+  }
+
+  function moveLiquid(btn, instant = false) {
+    const ind = document.getElementById('pill-indicator');
+    if (instant) {
+      ind.style.transition = 'none';
+      requestAnimationFrame(() => { ind.style.transition = ''; });
+    }
+    ind.style.width = btn.offsetWidth + 'px';
+    ind.style.left  = btn.offsetLeft  + 'px';
+    document.querySelectorAll('.pill-btn').forEach(b => {
+      b.className = 'pill-btn ' + (b.dataset.cat === btn.dataset.cat ? 'active' : 'idle');
+    });
+  }
+
+  function filterCat(cat) {
+    ST.cat = cat;
+    const grid = document.getElementById('menu-grid');
+    grid.style.transition = 'opacity .15s ease';
+    grid.style.opacity = '0';
+    setTimeout(() => { renderMenu(); grid.style.opacity = '1'; }, 165);
+  }
+
+  async function loadMenu() {
+    try {
+      const data = await fetch('/api/menu').then(r => r.json());
+      ST.menu = data.menu;
+      const sk = document.getElementById('skel-grid');
+      sk.style.transition = 'opacity .35s ease';
+      sk.style.opacity = '0';
+      setTimeout(() => sk.remove(), 360);
+      buildPills(data.categories);
+      renderMenu();
+      lucide.createIcons();
+    } catch {
+      const sk = document.getElementById('skel-grid');
+      if (sk) sk.innerHTML = '<p class="col-span-3 text-center text-red-400/50 text-sm py-16">Menyu yuklanmadi. Sahifani yangilang.</p>';
+    }
+  }
+
+  function renderMenu() {
+    const grid  = document.getElementById('menu-grid');
+    const items = ST.cat === 'all' ? ST.menu : ST.menu.filter(i => i.category === ST.cat);
+    grid.innerHTML = '';
+    items.forEach((item, idx) => grid.appendChild(mkCard(item, idx)));
+    attachMouseGlow();
+    lucide.createIcons();
+  }
+
+  function mkCard(item, idx) {
+    const qty   = ST.cart[item.id]?.quantity || 0;
+    const badge = BADGES[item.id];
+    const delay = Math.min(idx * 0.065, 0.65);
+    const el  = document.createElement('div');
+    el.className = 'menu-card glass-card reveal';
+    el.style.animationDelay = delay + 's';
+    const qtyControls = qty > 0
+      ? `<button class="qty-btn w-8 h-8 rounded-xl flex items-center justify-center text-base font-bold text-white/38
+                        hover:text-red-400 hover:bg-red-400/10 transition-all"
+                 style="background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);"
+                 onclick="removeFromCart(${item.id})">−</button>
+         <span class="text-sm font-extrabold text-white w-5 text-center select-none">${qty}</span>`
+      : '';
+    el.innerHTML = `
+      <div class="card-glow"></div>
+      <div class="relative overflow-hidden" style="aspect-ratio:4/3;">
+        <img src="${imgUrl(item.id)}" alt="${item.name}" class="card-img" loading="lazy" decoding="async"
+          onerror="this.parentElement.style.background='rgba(255,255,255,.03)';this.outerHTML='<div class=\\'w-full h-full flex items-center justify-center text-5xl select-none\\'>${item.emoji}</div>';">
+        <div class="absolute inset-0" style="background:linear-gradient(to bottom,rgba(2,4,10,0)45%,rgba(2,4,10,.92)100%);pointer-events:none;"></div>
+        ${badge ? `<span class="absolute top-3 left-3 badge ${badge.c}">${badge.l}</span>` : ''}
+        <span class="absolute top-3 right-3 text-[10px] font-bold text-white/45 tracking-wide px-2.5 py-1 rounded-lg glass-dark-sm">${item.category}</span>
+      </div>
+      <div class="p-5 relative z-[2]">
+        <h3 class="text-[.95rem] font-extrabold text-white leading-snug mb-1.5 tracking-[-0.015em]">${item.name}</h3>
+        <p class="text-xs text-white/28 leading-relaxed mb-5 line-clamp-2">${item.desc}</p>
+        <div class="flex items-center justify-between">
+          <span class="text-base font-extrabold text-white tracking-[-0.015em]">${fmt(item)}</span>
+          <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+            ${qtyControls}
+            <button class="qty-btn w-8 h-8 rounded-xl flex items-center justify-center text-base font-extrabold text-[#02040A] transition-all hover:scale-108"
+                    style="background:linear-gradient(135deg,#d4af37,#f5e070);box-shadow:0 4px 18px rgba(212,175,55,.32);"
+                    onclick="addToCart(${item.id},event)">+</button>
+          </div>
+        </div>
+      </div>`;
+    return el;
+  }
+
+  function attachMouseGlow() {
+    document.querySelectorAll('.menu-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - r.top)  + 'px');
+      });
+    });
+  }
+
+  function addToCart(id, e) {
+    const item = ST.menu.find(m => m.id === id);
+    if (!item) return;
+    ST.cart[id] ? ST.cart[id].quantity++ : (ST.cart[id] = { ...item, quantity: 1 });
+    syncUI();
+    fireParticle(e);
+    bounceFab();
+  }
+
+  function removeFromCart(id) {
+    if (!ST.cart[id]) return;
+    ST.cart[id].quantity--;
+    if (ST.cart[id].quantity <= 0) delete ST.cart[id];
+    syncUI();
+  }
+
+  function clearCart() { ST.cart = {}; syncUI(); }
+
+  function syncUI() {
+    const n = cartN();
+    const t = cartT();
+    const hb = document.getElementById('hdr-badge');
+    hb.textContent = Math.min(n, 99);
+    hb.style.display = n > 0 ? 'flex' : 'none';
+    const fab = document.getElementById('fab');
+    if (n > 0) {
+      fab.classList.remove('hidden');
+      document.getElementById('fab-total').textContent = fmtN(t);
+      document.getElementById('fab-badge').textContent = n;
+      document.getElementById('fab-r1').classList.remove('hidden');
+      document.getElementById('fab-r2').classList.remove('hidden');
+    } else {
+      fab.classList.add('hidden');
+    }
+    renderMenu();
+    renderCartItems();
+  }
+
+  function renderCartItems() {
+    const items  = Object.values(ST.cart);
+    const list   = document.getElementById('cart-list');
+    const empty  = document.getElementById('cart-empty');
+    const footer = document.getElementById('cart-footer');
+    const clrBtn = document.getElementById('clear-btn');
+    document.getElementById('cart-lbl').textContent = `${cartN()} ta mahsulot`;
+    const isEmpty = items.length === 0;
+    list.style.display   = isEmpty ? 'none' : '';
+    empty.style.display  = isEmpty ? 'flex'  : 'none';
+    footer.style.display = isEmpty ? 'none'  : '';
+    clrBtn.style.display = isEmpty ? 'none'  : 'flex';
+    list.innerHTML = '';
+    items.forEach((item, i) => {
+      const lt = prc(item) * item.quantity;
+      const el = document.createElement('div');
+      el.className = 'flex items-center gap-3 p-3.5 rounded-2xl';
+      el.style.cssText = `background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.045);animation:revealUp .3s cubic-bezier(.16,1,.3,1) ${i * .04}s both;`;
+      el.innerHTML = `
+        <div class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
+          <img src="${imgUrl(item.id, 120, 120)}" alt="${item.name}" class="w-full h-full object-cover"
+               onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-2xl bg-white/5 select-none\\'>${item.emoji}</div>'">
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[13px] font-bold text-white truncate tracking-[-0.01em]">${item.name}</p>
+          <p class="text-xs font-bold mt-0.5 gold-text">${fmtN(lt)}</p>
+        </div>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button class="qty-btn w-7 h-7 rounded-lg flex items-center justify-center text-sm font-bold text-white/35 hover:text-red-400 hover:bg-red-400/10 transition-all"
+                  style="border:1px solid rgba(255,255,255,.06);"
+                  onclick="removeFromCart(${item.id})">−</button>
+          <span class="text-sm font-extrabold text-white w-4 text-center select-none">${item.quantity}</span>
+          <button class="qty-btn w-7 h-7 rounded-lg flex items-center justify-center text-sm font-extrabold text-[#02040A] hover:opacity-90 transition-all"
+                  style="background:linear-gradient(135deg,#d4af37,#f5e070);"
+                  onclick="addToCart(${item.id},event)">+</button>
+        </div>`;
+      list.appendChild(el);
+    });
+    document.getElementById('cart-total').textContent = fmtN(cartT());
+    lucide.createIcons();
+  }
+
+  function fireParticle(e) {
+    const fab  = document.getElementById('fab-btn');
+    const rect = fab.getBoundingClientRect();
+    const tx   = rect.left + rect.width  / 2;
+    const ty   = rect.top  + rect.height / 2;
+    const cols = ['#d4af37','#f5e070','#b8960c','#8b5cf6','#6366f1','#10b981','#f59e0b'];
+    const ptcl = document.getElementById('ptcl-layer');
+    for (let i = 0; i < 9; i++) {
+      const p  = document.createElement('div');
+      const cx = e.clientX + (Math.random() - .5) * 32;
+      const cy = e.clientY + (Math.random() - .5) * 32;
+      const sz = 5 + Math.random() * 11;
+      p.className = 'ptcl';
+      p.style.cssText = `left:${cx}px;top:${cy}px;width:${sz}px;height:${sz}px;background:${cols[i % cols.length]};--tx:${tx - cx}px;--ty:${ty - cy}px;--dur:${.42 + Math.random() * .32}s;--del:${i * .042}s;`;
+      ptcl.appendChild(p);
+      setTimeout(() => p.remove(), 950);
+    }
+    const hc = document.getElementById('hdr-cart');
+    hc.classList.remove('do-bounce');
+    void hc.offsetWidth;
+    hc.classList.add('do-bounce');
+    setTimeout(() => hc.classList.remove('do-bounce'), 520);
+  }
+
+  function bounceFab() {
+    const btn = document.getElementById('fab-btn');
+    btn.classList.remove('do-bounce');
+    void btn.offsetWidth;
+    btn.classList.add('do-bounce');
+    setTimeout(() => btn.classList.remove('do-bounce'), 520);
+  }
+
+  function openCart() {
+    const ov   = document.getElementById('cart-overlay');
+    const dr   = document.getElementById('cart-drawer');
+    const wrap = document.getElementById('page-wrap');
+    ov.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      ov.style.opacity = '1';
+      dr.classList.add('open');
+      wrap.classList.add('cart-open');
+    });
+    document.body.style.overflow = 'hidden';
+    renderCartItems();
+  }
+
+  function closeCart() {
+    const ov   = document.getElementById('cart-overlay');
+    const dr   = document.getElementById('cart-drawer');
+    const wrap = document.getElementById('page-wrap');
+    ov.style.opacity = '0';
+    dr.classList.remove('open');
+    wrap.classList.remove('cart-open');
+    setTimeout(() => {
+      ov.classList.add('hidden');
+      document.body.style.overflow = '';
+    }, 540);
+  }
+
+  async function checkout() {
+    if (!ST.table) {
+      closeCart();
+      setTimeout(() => {
+        const row = document.getElementById('table-row');
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const lbl = document.getElementById('table-lbl');
+        lbl.textContent = '⚠️ Buyurtma berish uchun stol tanlang!';
+        lbl.style.color = '#f87171';
+        setTimeout(() => { lbl.textContent = 'Stolni tanlang'; lbl.style.color = ''; }, 3500);
+      }, 480);
+      return;
+    }
+    const items = Object.values(ST.cart).map(i => ({ name: i.name, price: prc(i), quantity: i.quantity }));
+    if (!items.length) return;
+    const btn = document.getElementById('checkout-btn');
+    const txt = document.getElementById('checkout-txt');
+    btn.disabled = true;
+    txt.textContent = 'Yuborilmoqda...';
+    try {
+      const res = await fetch('/api/order', {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body   : JSON.stringify({ items, total_price: cartT(), table_number: ST.table, currency: ST.currency, notify_chat_id: '' }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        closeCart();
+        document.getElementById('success-oid').textContent = `Buyurtma ID: ${data.order_id.slice(0, 8).toUpperCase()}`;
+        const modal = document.getElementById('success-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        clearCart();
+      } else {
+        throw new Error(data.detail || 'Noma\'lum xato');
+      }
+    } catch (err) {
+      alert(`❌ Xato: ${err.message}`);
+    } finally {
+      btn.disabled = false;
+      txt.textContent = 'Buyurtma berish';
+    }
+  }
+
+  function closeSuccess() {
+    const m = document.getElementById('success-modal');
+    m.classList.add('hidden');
+    m.classList.remove('flex');
+  }
+
+  (function init() {
+    const saved = localStorage.getItem('sm-theme');
+    if (saved === 'light') document.documentElement.classList.remove('dark');
+    else document.documentElement.classList.add('dark');
+    syncTheme();
+    buildTable();
+    loadMenu();
+    lucide.createIcons();
+    const _tp = parseInt(new URLSearchParams(window.location.search).get('table'));
+    if (_tp >= 1 && _tp <= 20) {
+      selectTable(_tp);
+      setTimeout(() => {
+        const el = document.querySelector(`.table-num[data-n="${_tp}"]`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }, 180);
+    }
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+# Backend — Vercel must not scan these as serverless functions
+app/api/
+app/bot/
+app/core/
+app/services/
+app/main.py
+app/__init__.py
+run.py
+requirements.txt
+Dockerfile
+.dockerignore
+render.yaml
+generate_qr.py
+output_qrcodes/
+.env
